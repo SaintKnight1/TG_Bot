@@ -1,25 +1,57 @@
-import telebot
-from telebot import types
+import logging
+import asyncio
+import os
+import config
+import keyboards as kb
 
-bot = telebot.TeleBot('6676623782:AAHaL32hiqxhpfDSu_IV_-8JKcx4-irndCo')
-
-@bot.message_handler(content_types=['photo', 'audio'])
-def get_photo(message):
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton('Hello', callback_data='delete'))
-    bot.reply_to(message, 'Обработка файла', reply_markup=markup)
-
-
-@bot.message_handler()
-def start(message):
-    if message.text.lower() == 'лиза':
-        bot.send_message(message.chat.id, 'Продам жопу за кокосово -банановое латте')
-    else:
-        bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}')
+from aiogram import Bot, Dispatcher, F
+from aiogram.filters import CommandStart
+from aiogram.types import Message, FSInputFile
+from dotenv import load_dotenv
 
 
-# @bot.message_handler(commands=['start'])
-# def main(message):  # message ранит в себе чат с пользователем
-#     bot.send_message(message.chat.id, 'Привет!') # message.chat.id - это id текущего чата с пользователем
+# init
 
-bot.infinity_polling() # позволяет не завершать работу скрипта, т.е. не останавливать бота
+load_dotenv()
+bot = Bot(token=os.getenv('TOKEN'))
+dp = Dispatcher()
+
+# Получаем все медиа файлы из  директории с проектом (чтобы файлы корректно искались нга любой системе)
+
+all_media_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'all_media_dir')
+
+
+@dp.message(CommandStart())
+async def cmd_start(message: Message):
+    await message.answer('Привет!', reply_markup=kb.main)
+
+
+@dp.message(F.text == "О продукте")
+async def about_info(message: Message):
+    photo_file = FSInputFile(path=os.path.join(all_media_dir, 'sale.jpg'))
+    await message.answer_photo(photo=photo_file, caption='О продукте')
+
+
+@dp.message(F.text == 'Купить тетрадь')
+async def buy_note(message: Message):
+    link = config.note_link
+    await message.answer(text=f'Тут должна быть ссылка на тетрадь\n{link}')
+
+
+@dp.message(F.text == 'Купить полную версию тетради')
+async def buy_note(message: Message):
+    link = config.full_note_link
+    await message.answer(text=f'Тут должна быть ссылка на полную тетрадь\n{link}')
+
+
+async def main():
+    await dp.start_polling(bot, skip_updates=False)
+
+
+if __name__ == "__main__":
+    # log
+    logging.basicConfig(level=logging.INFO)
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print('Exit')
