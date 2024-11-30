@@ -32,6 +32,23 @@ async def about_info(message: Message):
     await message.answer_photo(photo=photo_file, caption='О продукте')
 
 
+@dp.message(F.text == "Часто задаваемые вопросы")
+async def popular_questions(message: Message):
+    await message.answer('Выбери вопрос', reply_markup=kb.questions_keyboard)
+
+
+# Обработка нажатий на InlineKeyboard
+@dp.message(F.text in ['Вопрос1', 'Вопрос 2'])
+async def process_callback_button(callback_query: types.CallbackQuery):
+    # Обработка нажатия кнопки
+    if callback_query.data == 'button1':
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, "Вы нажали кнопку 1!")
+    elif callback_query.data == 'button2':
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, "Вы нажали кнопку 2!")
+
+
 @dp.message(F.text == 'Купить тетрадь')
 async def buy_note(message: Message):
     link = config.note_link
