@@ -47,16 +47,21 @@ async def process_questions_button(message: Message):
         await message.answer(text=config.questions[message.text])
 
 
-@dp.message(F.text == 'Купить тетрадь')
+@dp.message(lambda message: message.text == 'Купить тетрадь' or 'Купить полную версию тетради')
 async def buy_note(message: Message):
-    link = config.note_link
-    await message.answer(text=f'Тут должна быть ссылка на тетрадь\n{link}')
+    if message.text == 'Купить тетрадь':
+        link = config.note_link
+        await message.answer(text=f'Тут должна быть ссылка на тетрадь\n{link}')
+    elif message.text == 'Купить полную версию тетради':
+        link = config.full_note_link
+        await message.answer(text=f'Тут должна быть ссылка на полную тетрадь\n{link}')
 
 
-@dp.message(F.text == 'Купить полную версию тетради')
-async def buy_note(message: Message):
-    link = config.full_note_link
-    await message.answer(text=f'Тут должна быть ссылка на полную тетрадь\n{link}')
+#
+# @dp.message(F.text == 'Купить полную версию тетради')
+# async def buy_note(message: Message):
+#     link = config.full_note_link
+#     await message.answer(text=f'Тут должна быть ссылка на полную тетрадь\n{link}')
 
 
 async def main():
