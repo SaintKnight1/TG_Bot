@@ -1,4 +1,7 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
+
+from config import questions
 
 main = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text='О продукте')],
@@ -16,3 +19,11 @@ questions_keyboard = ReplyKeyboardMarkup(keyboard=[
 ],
     resize_keyboard=True,
     input_field_placeholder='Выбери пункт меню.')
+
+
+async def questions_keyboard():
+    keyboard = ReplyKeyboardBuilder()
+    questions_key_list = config.questions.keys()
+    for question in questions_key_list:
+        keyboard.add(KeyboardButton(text=question))
+    return keyboard.as_markup().resize_keyboard
