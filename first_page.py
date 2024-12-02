@@ -36,17 +36,15 @@ async def about_info(message: Message):
 async def popular_questions(message: Message):
     await message.answer('Выбери вопрос', reply_markup=await kb.questions_keyboard())
 
-#
-# # Обработка нажатий на InlineKeyboard
-# @dp.message(F.text in ['Вопрос1', 'Вопрос 2'])
-# async def process_callback_button(callback_query: types.CallbackQuery):
-#     # Обработка нажатия кнопки
-#     if callback_query.data == 'button1':
-#         await bot.answer_callback_query(callback_query.id)
-#         await bot.send_message(callback_query.from_user.id, "Вы нажали кнопку 1!")
-#     elif callback_query.data == 'button2':
-#         await bot.answer_callback_query(callback_query.id)
-#         await bot.send_message(callback_query.from_user.id, "Вы нажали кнопку 2!")
+
+# Обработка нажатий на вопросы
+@dp.message(lambda message: message.text in config.questions.keys())
+async def process_questions_button(message: Message):
+    # Обработка нажатия кнопки
+    if message.text == 'Назад':
+        await message.answer(text=config.questions[message.text], reply_markup=kb.main)
+    else:
+        await message.answer(text=config.questions[message.text])
 
 
 @dp.message(F.text == 'Купить тетрадь')
